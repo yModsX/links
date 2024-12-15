@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shortfy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #ffffff;
+            color: #000000;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            padding: 20px;
+            flex: 1;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .main-heading {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 40px 0 20px;
+        }
+        .highlight {
+            color: #007bff;
+        }
+        .sub-heading {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: 1px solid #dcdcdc;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #000000;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+        }
+        .button:hover:not(.disabled) {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+        .button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .footer {
+        background-color: #f0f4f8;
+        padding: 20px;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+        .footer .contact-info {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .footer .email {
+            font-weight: bold;
+        }
+        .footer .copyright {
+            font-size: 14px;
+            color: #888888;
+            margin-top: 10px;
+        }
+        .error-card {
+            background-color: #fdecea;
+            color: #d32f2f;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #f5c6c6;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">        
+        <div class="main-heading">
+            Seu link<br>já está<br><span class="highlight">disponível!</span>
+        </div>
+        <div class="sub-heading">
+            Falta apenas um passo para acessar seu conteúdo! Basta visualizar um anúncio. Não se preocupe, é rápido e simples: toque no botão abaixo, veja o anúncio e retorne a esta página para desbloquear o link.
+        </div>
+        <div id="error-container"></div>
+        <div class="buttons">
+            <a id="ad-button" class="button" onclick="openAd()">Ver anúncio</a>
+            <a id="redirect-button" class="button disabled" onclick="redirectToPage()">Acessar link</a>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="contact-info">
+            yModsX<br>
+            <span class="email">youtube.com/yModsX</span><br>
+            Inscreva-se e acompanhe os próximos vídeos.
+        </div>
+        <div class="copyright">
+            ©2024 Todos direitos reservados
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('url'); // Obtém a ID da URL
+        const apiUrl = "https://raw.githubusercontent.com/yModsX/links/refs/heads/main/data.json"; // Substituir com o link real do JSON
+        let redirectUrl = "";
+
+        async function fetchUrl() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                redirectUrl = data[id] ? `https://${data[id]}` : null;
+
+                if (!redirectUrl) {
+                    showError("Erro: Link não encontrado ou inválido.");
+                    document.getElementById("ad-button").disabled = true;
+                }
+            } catch (error) {
+                console.error("Erro ao carregar JSON:", error);
+                showError("Infelizmente não foi possível encontrar o link. Por favor, tente novamente mais tarde.");
+                document.getElementById("ad-button").disabled = true;
+            }
+        }
+
+        function openAd() {
+            // Abre o anúncio em uma nova aba
+            window.open("https://s.shopee.com.br/7fJP1fWmfi", "_blank");
+            // Ativa o botão de redirecionamento
+            document.getElementById("redirect-button").classList.remove("disabled");
+        }
+
+        function redirectToPage() {
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            } else {
+                showError("Ocorreu um problema ao tentar redirecioná-lo para o conteúdo. Tente novamente em alguns minutos.");
+            }
+        }
+
+        function showError(message) {
+            const errorContainer = document.getElementById("error-container");
+            errorContainer.innerHTML = `<div class="error-card">${message}</div>`;
+        }
+
+        fetchUrl();
+    </script>
+</body>
+</html>
