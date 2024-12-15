@@ -132,7 +132,7 @@
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-                redirectUrl = data[id] ? `https://${data[id]}` : null;
+                redirectUrl = data[id] ? `${data[id]}` : null;
 
                 if (!redirectUrl) {
                     showError("Erro: Link não encontrado ou inválido.");
